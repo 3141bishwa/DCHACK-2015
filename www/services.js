@@ -48,6 +48,28 @@ angular.module('App.Services', [])
                     });
             },
 
+            logout: function () {
+
+                var tempHeaders = angular.copy(authenticationHeaders);
+                angular.extend(tempHeaders, {"X-Parse-Session-Token": CurrentUser.sessionToken});
+
+                var settings = {
+                    headers: tempHeaders
+                };
+
+                // $http returns a promise, which has a then function,
+                // which also returns a promise
+                return $http.post(baseURL + 'logout', {}, settings)
+                    .then(function (response) {
+                        // In the response resp.data contains the result
+                        // check the console to see all of the data returned
+                        console.log('logout', response);
+                        return response;
+                    }, function (_error) {
+                        console.log(_error);
+                    });
+            },
+            
             getStuff: function () {
 
                 // if an id is passed in then use it when querying

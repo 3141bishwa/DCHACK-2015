@@ -1,5 +1,5 @@
 angular.module('App.Controllers', ['App.Services'])
-    .controller('homeCtrl', function ($scope, $state, ParseHttpService) {
+    .controller('homeCtrl', function ($scope, $state, ParseHttpService, $timeout) {
         $scope.stateInfo = $state.current;
 
         $scope.itemsList = {};
@@ -15,6 +15,15 @@ angular.module('App.Controllers', ['App.Services'])
             $state.go("detail", {
                 id: _id
             });
+        };
+
+        $scope.doLogoutAction = function doLogoutAction() {
+            ParseHttpService.logout().then(function(_response){
+                $timeout(function () {
+                    $state.go('login', {});
+                    console.log("logout: logout", _response);
+                }, 2);
+            })
         };
 
         populateList();
