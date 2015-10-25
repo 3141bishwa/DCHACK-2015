@@ -1,50 +1,9 @@
-/**
- * Created by shitosh parajuli on 10/1/2015.
- */
-(function () {
-
-    var a = angular.module('app', ['ionic', 'App.Services']);  //creating app by angular
-    /*.controller("controller-one", function($scope){
-
-     //Private since not attached to scope
-     var privateVar = "Can't see this";
-
-     //Accesible to view since it is attached to scope
-     $scope.myVariable = "I can see you";
-
-     $scope.items = ['lol',
-     '2nd item'];*/
-
-
-//new controller
-
-
-
-
-    a.config(function($stateProvider, $urlRouterProvider){
-        //Setting default to home
-        $urlRouterProvider.otherwise("/home");
-
-        //Setting up states
-        $stateProvider
-            .state('home', {
-                url: "/home",
-                templateUrl: "home.html",
-                controller: "homeCtrl"
-            })
-            .state('detail', {
-                url: "/detail/:id",
-                templateUrl: "detail.html",
-                controller: "detailCtrl"
-            });
-    });
-
-
-
-    a.controller('homeCtrl', function ($scope, $state, ParseHttpService) {
+angular.module('App.Controllers', ['App.Services'])
+    .controller('homeCtrl', function ($scope, $state, ParseHttpService) {
         $scope.stateInfo = $state.current;
 
         $scope.itemsList = {};
+
 
         $scope.inputItem = {
             value: "",
@@ -57,6 +16,8 @@
                 id: _id
             });
         };
+
+        populateList();
 
         $scope.deleteObject = function editObject(_objectId) {
             ParseHttpService.deleteObjectById(_objectId)
@@ -96,6 +57,7 @@
                         $scope.inputItem = {};
 
                         return populateList();
+
 
 
 
@@ -151,8 +113,6 @@
             });
         }
 
-        console.log('Start')
-
         ParseHttpService.login().then(function loginSuccess(_loggedIn) {
             alert(_loggedIn.username + " logged in");
 
@@ -163,39 +123,35 @@
 
 
         }, function error(_error) {
-                alert("Error" + _error);
+            console.log(_error);
         });
 
-
-
-
-
-
-
-    });
-
-    a.controller('detailCtrl', function($scope, $state, ParseHttpService){
-        
-        $scope.itemDetails = '';
-
+    })
+    .controller('detailCtrl', function ($scope, $state, ParseHttpService) {
         $scope.stateInfo = $state.current;
-
-        $scope.stateParamsInfo = $state.params;
-
-        
-
-        //$scope.stuffDetail = ParseHttpService.getStuffbyid($state.params._id)
-
-        ParseHttpService.getStuffbyid($state.params.id).then(function abc(_iddata){
-            console.log(_iddata);
-            console.log('am i working??????????')
-            $scope.itemDetails = _iddata;
+        $scope.params = $state.params;
+        ParseHttpService.getObjectById($state.params.objectId).then(function (_data) {
+            console.log(_data);
+            $scope.item = _data;
         }, function (_error) {
-            alert("Error". _error.message);
+            alert("Error"._error.message);
         });
-    });
+    })
+    .controller('loginCtrl', function ($scope, $state, ParseHttpService, $timeout) {
+    console.log("In Login Controller");
 
-})();
+    $scope.credentials = {};
 
+    $scope.doLoginAction = function () {
+        ParseHttpService.login($scope.credentials).then(function (_user) {
+            $timeout(function () {
+            
+                var x = $state.go('app.home', {});
+                console.log("user", _user);
+            }, 2);
 
-
+        }, function (_error) {
+            alert("Login Error " + (_error.message ? _error.message: _error.data.error));
+        });
+    }
+});

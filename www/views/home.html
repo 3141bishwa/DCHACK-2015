@@ -1,0 +1,21 @@
+<ion-view title="$http - Master- Detail">
+    <ion-content class="padding">
+        <ion-list>
+            <ion-item class="item-divider">My Parse Data</ion-item>
+            <ion-item ng-repeat="item in itemsList track by item.objectId" ng-href="#/detail/{{item.objectId}}">
+                {{item.name}} {{item.room}}
+                <div>{{item.objectId}}</div>
+            </ion-item>
+
+
+        </ion-list>
+        <item class="item-input">
+            <label class="item-input-wrapper">
+                <!-- enter values separated by coma -->
+                <input type="text" placeholder="name, room" ng-model="inputItem.value">
+            </label>
+            <button class="button button-clear" ng-click="addItem()">ADD
+            </button>
+        </item>
+    </ion-content>
+</ion-view>
